@@ -1,11 +1,13 @@
-To launch program you need to have GCC installed on your machine and then specify PATH to it in make_calc.cmd file.
+To launch program you need to have GCC installed on your machine and then specify PATH to it in makeit.cmd file.
 
-Program compiles every time after make_calc.cmd is opened. It then parses test.in file and creates a tree and tries to execute try-catch statement.
-Sadly, it is unable to execute it in a right way. But syntax-parser works fine.
+After compilation process you will receive test.exe file. Launch it and write any "Try-Catch" statement, which is allowed by Grammar. 
+You can use this example: 
+try { throw Exeption_1; throw Exeption_2; print First; try { throw Exeption_3; print Second;} catch (Exeption_3) {print Third;}} catch (Exeption_1) {print Fourth;} catch (Exeption_2) {print Fifth;} 
 
-You can upgrade this program with the help of code from "Try-Catch-Recursive-Descent-Parser" folder.
+You will get "DONE" after pressing "Enter". You will get "Syntax Error" if there are errors in your code.
 
 NOTES:
 1. It is recommended to use spacing after every lexem;
 2. ALWAYS begin names of Exceptions and printable Text with a capital letter. Use test.in for reference
 3. Any level of nesting is possible
+4. The program does not support semantic
