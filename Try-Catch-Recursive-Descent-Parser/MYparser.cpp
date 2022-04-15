@@ -7,7 +7,7 @@ extern std::string text;
 using namespace std;
 
 /*
-*  грамматика
+*  Grammar
 *
 * stmt ::= try { a' } cc
 * a' ::= a b
@@ -43,7 +43,7 @@ string aI(bool executable) {
 	return nameOfException1 != "" ? nameOfException1 : nameOfException2;
 }
 
-// а
+// a
 string a(bool executable) {
 	string nameOfException = "";
 	string printText;
