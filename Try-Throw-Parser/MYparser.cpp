@@ -1,16 +1,8 @@
 #include <stdio.h>
-#include <vector>
-#include <algorithm>
 #include "MYlexer.h"
 
 extern int lookahead;
 extern std::string text;
-std::vector <std::string> throwExecptions;
-std::string nameOfException;
-std::vector <std::string> catchExceptions;
-std::string catchedException;
-bool tryTrue = true;
-bool catchedSomething = false;
 
 using namespace std;
 
@@ -19,131 +11,106 @@ using namespace std;
 *
 * stmt ::= try { a' } cc
 * a' ::= a b
-* a ::= print expt; | throw expr; | stmt
+* a ::= print expr; | throw expr; | stmt
 * b ::= a' | Epsilon
-* cc ::= catch ( expr ) { a' } cc'
-* cc' ::= cc | Epsilon
+* cc ::= catch ( expr ) { a' } [cc]
 *
 */
 
-void stmt(bool firstTry);
-bool aI(bool flag, bool catchedSomething);
-void b(bool flag);
-void a(bool flag, bool catchedSomething);
-void cc(bool flag);
-void ccI();
+string stmt(bool executable);
+string aI(bool executable);
+string b(bool executable);
+string a(bool executable); 
+string cc(bool executable, string nameOfException, bool catchedSomething); 
 
-// блок try
-void stmt(bool firstTry) {
-	if (firstTry) {
-		scan(); 
-		if (lookahead != TRY) error("Expected try");
-	}
+// TRY Block
+string stmt(bool executable) {
+	string nameOfException = "";
+	if (lookahead != TRY) error("Expected try");
 	scan();
 	if (lookahead != LPAREN) error("Expected {");
-	aI(true, catchedSomething);
+	scan();
+	nameOfException = aI(executable);
 	if (lookahead != RPAREN) error("Expected }");
-	cc(true);
+	scan();
+	return cc(executable && nameOfException != "", nameOfException, false);
 }
 
-// а штрих
-bool aI(bool flag, bool catchedSomething) {
-	a(flag, catchedSomething);
-	b(true);
-	return flag;
+// a'
+string aI(bool executable) {
+	string nameOfException1 = a(executable);
+	string nameOfException2 = b(executable && (nameOfException1 == ""));
+	return nameOfException1 != "" ? nameOfException1 : nameOfException2;
 }
 
 // а
-void a(bool flag, bool catchedSomething) {
-	if (flag) {
-		scan();
-	}
-
+string a(bool executable) {
+	string nameOfException = "";
 	string printText;
-	switch (lookahead){
-		case (THROW): 
-			scan();
-			nameOfException = text;
-			throwExecptions.push_back(nameOfException);
-			scan();
-			if (lookahead != TCHKZPT) error("Expected ;");
+	switch (lookahead) {
+	case (THROW):
+		scan();
+		nameOfException = text;
+		scan();
+		if (lookahead != TCHKZPT) error("Expected ;");
+		scan();
+		if (executable) return nameOfException;
 		break;
-		case (TRY): 
-			stmt(false);
+	case (TRY):
+		return stmt(executable);
 		break;
-		case (PRINT):
-			if (catchedSomething == false) {
-				scan();
-				printText = text;
-				cout << "Simple print: " << printText << endl;
-				scan();
-				if (lookahead != TCHKZPT) error("Expected ;");
-			}
-			else {
-				catchedSomething = false;
-				scan();
-				printText = text;
-				/*if (strcmp(nameOfException.c_str(), catchedException.c_str()) == 0)
-					cout << "Your output: " << printText << endl;*/
-				if (std::find(throwExecptions.begin(), throwExecptions.end(), catchedException) != throwExecptions.end()) {
-					/* v contains x */
-					cout << "Your output: " << printText << endl;
-				}
-				else
-					cout << "No such exception: " << catchedException << endl;
-				scan();
-				if (lookahead != TCHKZPT) error("Expected ;");
-			}
+	case (PRINT):
+		scan();
+		if (executable)
+			cout << "Simple print: " << text << endl;
+		scan();
+		if (lookahead != TCHKZPT) error("Expected ;");
+		scan();
 		break;
-		default: error("Expected try or throw or print");
+	default: error("Expected try or throw or print");
 	}
+	return "";
 }
 
 // b
-void b(bool flag) {
-	if (flag && tryTrue) scan();
-	else if (!tryTrue)
-		tryTrue = !tryTrue;
-	if (lookahead == TRY || lookahead == THROW || lookahead == PRINT)
-		aI(false, catchedSomething);
+string b(bool executable) {
+	if (lookahead == TRY || lookahead == PRINT || lookahead == THROW)
+		return aI(executable);
+	return "";
 }
 
-// блок catch
-void cc(bool flag) {
-	if (flag) {
-		scan();
-		if (lookahead != CATCH) error("Expected catch");	
-	}
+// CATCH Block
+string cc(bool executable, string nameOfException, bool catchedSomething) {
+	string nameOfException1 = "";
+	string nameOfException2 = "";
+	if (lookahead != CATCH) error("Expected catch");
 	scan();
 	if (lookahead != OPEN) error("Expected (");
 	scan();
-	catchedException = text;
-	catchedSomething = true;
+	string catchedException = text;
 	scan();
 	if (lookahead != CLOSE) error("Expected )");
 	scan();
 	if (lookahead != LPAREN) error("Expected {");
-	aI(true, catchedSomething);
-	//if (flag) {
-		//scan();
-	//}
+	scan();
+	nameOfException1 = aI(executable && (catchedException == nameOfException));
 	if (lookahead != RPAREN) error("Expected }");
-	ccI();
-}
-
-// кетч штрих
-void ccI() {
 	scan();
 	if (lookahead == CATCH)
-		cc(false);
-	//else if (lookahead == THROW) 
-	else
-		tryTrue = false;
+		nameOfException2 = cc(executable, nameOfException, catchedSomething || (nameOfException == catchedException));
+	else if (!catchedSomething && (nameOfException != catchedException))
+		nameOfException2 = nameOfException;
+	//nameOfException2 = ccI(executable, nameOfException, catchedSomething || (nameOfException == catchedException));
+	return nameOfException1 != "" ? nameOfException1 : nameOfException2;
 }
 
 int main()
 {
-	stmt(true);
+	string nameOfException = "";
+	scan();
+	nameOfException = stmt(true);
+	if (nameOfException != "")
+		cout << "Not catched Exception: " << nameOfException << endl;
 	system("PAUSE>>NULL");
 	return 0;
 }
