@@ -4,3 +4,8 @@ Program compiles every time after make_calc.cmd is opened. It then parses test.i
 Sadly, it is unable to execute it in a right way. But syntax-parser works fine.
 
 You can upgrade this program with the help of code from "Try-Catch-Recursive-Descent-Parser" folder.
+
+NOTES:
+1. It is recommended to use spacing after every lexem;
+2. ALWAYS begin names of Exceptions and printable Text with a capital letter. Use test.in for reference
+3. Any level of nesting is possible
