@@ -1,10 +1,10 @@
 To launch program you need to have GCC installed on your machine and then specify PATH to it in makeit.cmd file.
 
-After compilation process you will receive test.exe file. Launch it and write any "Try-Catch" statement, which is allowed by Grammar. 
+After compilation process you will receive test.exe file. Launch it and write any "Try-Catch" statement, which is allowed by grammar. 
 You can use this example: 
 try { throw Exeption_1; throw Exeption_2; print First; try { throw Exeption_3; print Second;} catch (Exeption_3) {print Third;}} catch (Exeption_1) {print Fourth;} catch (Exeption_2) {print Fifth;} 
 
-You will get "DONE" after pressing "Enter". You will get "Syntax Error" if there are errors in your code.
+You will get "DONE" after pressing "Enter" if your statement is correct in terms of grammar. You will get "Syntax Error" if there are errors in your code.
 
 NOTES:
 1. It is recommended to use spacing after every lexem;
