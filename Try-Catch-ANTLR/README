@@ -1,0 +1,6 @@
+To launch program you need to have GCC installed on your machine and then specify PATH to it in make_calc.cmd file.
+
+Program compiles every time after make_calc.cmd is opened. It then parses test.in file and creates a tree and tries to execute try-catch statement.
+Sadly, it is unable to execute it in a right way. But syntax-parser works fine.
+
+You can upgrade this program with the help of code from "Try-Catch-Recursive-Descent-Parser" folder.
