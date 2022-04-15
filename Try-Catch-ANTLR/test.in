@@ -1,0 +1,1 @@
+try { throw Exeption_1; throw Exeption_2; print First; try { throw Exeption_3; print Second;} catch (Exeption_3) {print Third;}} catch (Exeption_1) {print Fourth;} catch (Exeption_2) {print Fifth;} 
